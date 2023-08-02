@@ -26,13 +26,18 @@ class AuthController extends Controller
         }
 
         $user = auth()->user();
-        return response()->json([
+        $data = [
             'user'  => [
                 'name'  => $user->name,
-                'email' => $user->email
+                'email' => $user->email,
             ],
             'token' => $token
-        ]);
+        ];
+
+        if($user->is_admin){
+            $data['user']['is_admin'] = 1;
+        }
+        return response()->json($data);
     }
 
     public function register(RegisterRequest $request)
@@ -55,7 +60,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        auth()->logout();
+        auth()->guard('api')->logout();
         return response()->json();
     }
 }
